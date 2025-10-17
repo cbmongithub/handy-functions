@@ -4,7 +4,12 @@ import { fetcher } from "../src/fetcher";
 const originalFetch = globalThis.fetch;
 
 afterEach(() => {
-  globalThis.fetch = originalFetch;
+  if (originalFetch) {
+    globalThis.fetch = originalFetch;
+  } else {
+    // @ts-expect-error - cleanup for environments without global fetch
+    delete globalThis.fetch;
+  }
   vi.restoreAllMocks();
 });
 
@@ -14,7 +19,10 @@ describe("fetcher", () => {
     globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
-      headers: new Headers({ "content-type": "application/json" }),
+      headers: {
+        get: (key: string) =>
+          key.toLowerCase() === "content-type" ? "application/json" : null,
+      },
       text: () => Promise.resolve(body),
     }) as unknown as typeof fetch;
 
@@ -26,7 +34,9 @@ describe("fetcher", () => {
     globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       status: 204,
-      headers: new Headers(),
+      headers: {
+        get: () => null,
+      },
       text: () => Promise.resolve(""),
     }) as unknown as typeof fetch;
 
@@ -38,7 +48,10 @@ describe("fetcher", () => {
     globalThis.fetch = vi.fn().mockResolvedValue({
       ok: false,
       status: 500,
-      headers: new Headers({ "content-type": "application/json" }),
+      headers: {
+        get: (key: string) =>
+          key.toLowerCase() === "content-type" ? "application/json" : null,
+      },
       json: () => Promise.resolve({ message: "Boom" }),
     }) as unknown as typeof fetch;
 
