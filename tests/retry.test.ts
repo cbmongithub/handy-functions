@@ -76,7 +76,14 @@ describe("retry", () => {
 
     controller.abort(abortError);
 
-    await vi.advanceTimersByTimeAsync(50);
+    if ("advanceTimersByTimeAsync" in vi) {
+      await (vi as unknown as { advanceTimersByTimeAsync: (ms: number) => Promise<void> }).advanceTimersByTimeAsync(
+        50
+      );
+    } else {
+      vi.advanceTimersByTime(50);
+      await Promise.resolve();
+    }
 
     const result = await retryPromise;
 
