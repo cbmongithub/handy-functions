@@ -1,0 +1,35 @@
+{
+  "name": "handy-functions",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/handy-functions.cjs",
+  "module": "./dist/handy-functions.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/handy-functions.mjs",
+      "require": "./dist/handy-functions.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly --project tsconfig.build.json",
+    "version": "changeset",
+    "version:change": "changeset version",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.7",
+    "@types/bun": "latest",
+    "@types/node": "^20.11.30",
+    "terser": "^5.30.3",
+    "typescript": "^5",
+    "vite": "^5.2.0",
+    "vitest": "^1.5.2"
+  }
+}
