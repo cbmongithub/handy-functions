@@ -22,7 +22,7 @@ npm install handy-functions
 ## Usage
 
 ```ts
-import { get, post, tryCatch } from "handy-functions";
+import { get, post, retry, tryCatch } from "handy-functions";
 
 type Todo = { id: number; title: string; completed: boolean };
 
@@ -44,6 +44,16 @@ const [profile, error] = await tryCatch<{ id: string; name: string }>(
 if (error) {
   console.error(error.message);
 }
+
+// Add resilient retry behavior to flaky endpoints
+const notifications = await retry(
+  () => get<{ id: string; read: boolean }[]>("https://api.example.com/inbox"),
+  {
+    attempts: 4,
+    delay: (attempt) => 250 * 2 ** (attempt - 1),
+    retryable: (err) => err instanceof TypeError, // only network-ish failures
+  }
+);
 ```
 
 ## Available Helpers
@@ -54,6 +64,7 @@ if (error) {
   - plain values or promises,
   - promise-returning thunks,
   - URL strings (auto routed through `fetcher` with optional request options).
+- `retry(target, retryOptions?, requestOptions?)` – retries async work with exponential backoff by default; accepts promise factories or URLs (delegating to `fetcher`), supports custom retry rules, delays, and abort signals.
 
 All exports are available through the main entry point (`import { ... } from "handy-functions"`).
 
