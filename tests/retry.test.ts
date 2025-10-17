@@ -3,7 +3,6 @@ import { retry } from "../src/retry";
 import * as fetcherModule from "../src/fetcher";
 
 afterEach(() => {
-  vi.useRealTimers();
   vi.restoreAllMocks();
 });
 
@@ -59,31 +58,21 @@ describe("retry", () => {
   });
 
   it("honors abort signals between attempts", async () => {
-    vi.useFakeTimers();
-
     const controller = new AbortController();
     const abortError = new Error("cancelled");
     const error = new Error("flaky");
-    const target = vi.fn().mockRejectedValue(error);
+    const target = vi.fn().mockImplementation(() => {
+      controller.abort(abortError);
+      return Promise.reject(error);
+    });
 
     const retryPromise = retry(target, {
       attempts: 3,
-      delay: 50,
+      delay: 0,
       signal: controller.signal,
     }).catch((err) => err);
 
     expect(target).toHaveBeenCalledTimes(1);
-
-    controller.abort(abortError);
-
-    if ("advanceTimersByTimeAsync" in vi) {
-      await (vi as unknown as { advanceTimersByTimeAsync: (ms: number) => Promise<void> }).advanceTimersByTimeAsync(
-        50
-      );
-    } else {
-      vi.advanceTimersByTime(50);
-      await Promise.resolve();
-    }
 
     const result = await retryPromise;
 
