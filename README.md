@@ -71,4 +71,4 @@ The build uses Vite’s Rolldown bundler and aggressive Terser minimization (man
 
 ## Contributing
 
-This repository is still evolving. PRs and issues are welcome—just run `bun test` and `bun run build` before submitting. Future iterations will introduce more cross-project helpers, so feel free to suggest additions or enhancements.***
+This repository is still evolving. PRs and issues are welcome—just run `bun test` and `bun run build` before submitting. Future iterations will introduce more cross-project helpers, so feel free to suggest additions or enhancements.\*\*\*

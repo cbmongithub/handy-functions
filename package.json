@@ -18,8 +18,6 @@
   ],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly --project tsconfig.build.json",
-    "version": "changeset",
-    "version:change": "changeset version",
     "test": "vitest run",
     "test:watch": "vitest"
   },
